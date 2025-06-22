@@ -1,0 +1,119 @@
+const mongoose = require('mongoose');
+const request = require('supertest');
+const app = require('../app');
+require('dotenv').config();
+
+jest.setTimeout(30000);
+
+let token;
+let tripId;
+
+beforeAll(async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('✅ Connected to MongoDB for testing');
+  } catch (err) {
+    console.error('❌ MongoDB connection error in test:', err);
+  }
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+});
+
+describe('AquaWeb API', () => {
+  it('registers a user', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({
+        name: 'Test User',
+        email: 'testuser@example.com',
+        password: '123456',
+        role: 'tourist'
+      });
+    expect([200, 201, 400]).toContain(res.statusCode); // 400 if already exists
+    if (res.body.token) token = res.body.token;
+  });
+
+  it('logs in a user', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({
+        email: 'testuser@example.com',
+        password: '123456'
+      });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.token).toBeDefined();
+    token = res.body.token;
+  });
+
+  it('gets user profile', async () => {
+    const res = await request(app)
+      .get('/api/users/me')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.email).toBe('testuser@example.com');
+  });
+
+  it('starts a trip', async () => {
+    const res = await request(app)
+      .post('/api/trips/start')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toBe(201);
+    tripId = res.body._id;
+  });
+
+  it('ends a trip', async () => {
+    const res = await request(app)
+      .put(`/api/trips/end/${tripId}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.endTime).toBeDefined();
+  });
+
+  it('creates a sighting', async () => {
+    const res = await request(app)
+      .post('/api/sightings')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        species: 'Humpback Whale',
+        count: 2,
+        behavior: 'Breaching',
+        location: { lat: 18.5, lng: 73.9 },
+        photoUrl: 'https://sample.com/image.jpg'
+      });
+    expect(res.statusCode).toBe(201);
+    expect(res.body.species).toBe('Humpback Whale');
+  });
+
+  it('gets all sightings', async () => {
+    const res = await request(app)
+      .get('/api/sightings');
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  it('reports an incident', async () => {
+    const res = await request(app)
+      .post('/api/incidents')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        type: 'pollution',
+        description: 'Oil spill detected',
+        location: { lat: 18.3, lng: 73.8 },
+        photoUrl: 'https://sample.com/spill.jpg'
+      });
+    expect(res.statusCode).toBe(201);
+    expect(res.body.type).toBe('pollution');
+  });
+
+  it('gets all species', async () => {
+    const res = await request(app)
+      .get('/api/species');
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+});
