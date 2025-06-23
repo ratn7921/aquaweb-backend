@@ -10,10 +10,7 @@ let tripId;
 
 beforeAll(async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGO_URI);
     console.log('✅ Connected to MongoDB for testing');
   } catch (err) {
     console.error('❌ MongoDB connection error in test:', err);
@@ -115,5 +112,61 @@ describe('AquaWeb API', () => {
       .get('/api/species');
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  it('fails to register with missing fields', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({ email: 'incomplete@example.com' });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('fails to login with wrong password', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'testuser@example.com', password: 'wrongpass' });
+    expect([400, 401]).toContain(res.statusCode);
+  });
+
+  it('denies access to protected route without token', async () => {
+    const res = await request(app)
+      .get('/api/users/me');
+    expect(res.statusCode).toBe(401);
+  });
+
+  it('denies access to protected route with invalid token', async () => {
+    const res = await request(app)
+      .get('/api/users/me')
+      .set('Authorization', 'Bearer invalidtoken');
+    expect(res.statusCode).toBe(401);
+  });
+
+  it('returns 404 for unknown route', async () => {
+    const res = await request(app)
+      .get('/api/unknownroute');
+    expect(res.statusCode).toBe(404);
+  });
+
+  it('returns 500 when ending a trip with invalid ID', async () => {
+    const res = await request(app)
+      .put('/api/trips/end/invalidid')
+      .set('Authorization', `Bearer ${token}`);
+    expect([400, 500]).toContain(res.statusCode);
+  });
+
+  it('returns 500 when creating a sighting with missing required fields', async () => {
+    const res = await request(app)
+      .post('/api/sightings')
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect([400, 500]).toContain(res.statusCode);
+  });
+
+  it('returns 500 when reporting an incident with missing required fields', async () => {
+    const res = await request(app)
+      .post('/api/incidents')
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect([400, 500]).toContain(res.statusCode);
   });
 });

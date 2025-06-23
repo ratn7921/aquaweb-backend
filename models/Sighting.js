@@ -1,12 +1,12 @@
 // models/Sighting.js
 const mongoose = require('mongoose');
 const SightingSchema = new mongoose.Schema({
-  species: String,
-  count: Number,
-  behavior: String,
+  species: { type: String, required: true },
+  count: { type: Number, required: true },
+  behavior: { type: String, required: true },
   location: {
-    lat: Number,
-    lng: Number
+    lat: { type: Number, required: true },
+    lng: { type: Number, required: true }
   },
   photoUrl: String,
   reporter: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
