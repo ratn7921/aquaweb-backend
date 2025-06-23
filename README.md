@@ -81,7 +81,7 @@ npx serve coverage/lcov-report
 ---
 
 ## 📊 Test Coverage Screenshot
-![Coverage Screenshot](coverage/screenshot.png)
+![Coverage Screenshot](coverage/Screenshot.png)
 ---
 
 ## 🧠 Credits
