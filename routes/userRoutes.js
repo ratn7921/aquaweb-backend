@@ -15,14 +15,19 @@
 // router.post('/me/update', protect, upload.single('avatar'), updateUserProfile);
 
 // export default router;
+
+
+
 const express = require('express');
 const router = express.Router();
-const { updateUserProfile, getUserProfile, registerUser } = require('../controllers/userController');
+const { updateUserProfile, getUserProfile, registerUser, getUserActivity // ✅ Add this
+} = require('../controllers/userController');
 const upload = require('../middleware/upload'); // ✅ correct
 const protect = require('../middleware/auth');
 
 router.post('/register', registerUser);
 router.get('/me', protect, getUserProfile);
 router.post('/me/update', protect, upload.single('avatar'), updateUserProfile);
+router.get('/activity', protect, getUserActivity);
 
 module.exports = router;

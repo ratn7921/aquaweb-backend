@@ -91,11 +91,11 @@
 
 // module.exports = router;
 
-
 const express = require('express');
 const router = express.Router();
-const { getSpeciesFromWormsOrFallback } = require('../controllers/wormsController');
+const { getWormsSpecies } = require('../controllers/wormsController');
 
-router.get('/:name', getSpeciesFromWormsOrFallback);
+// Route: GET /api/worms/:name
+router.get('/:name', getWormsSpecies);
 
 module.exports = router;
