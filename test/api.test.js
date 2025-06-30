@@ -170,3 +170,44 @@ describe('AquaWeb API', () => {
     expect([400, 500]).toContain(res.statusCode);
   });
 });
+describe('External Species API - /api/worms/:name', () => {
+  it('fetches marine species from WoRMS API', async () => {
+    const res = await request(app)
+      .get('/api/worms/Clownfish');
+
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('name');
+    expect(res.body[0]).toHaveProperty('source');
+    expect(['WoRMS', 'FishWatch']).toContain(res.body[0].source);
+  });
+
+  it('returns fallback from FishWatch if WoRMS fails', async () => {
+    const res = await request(app)
+      .get('/api/worms/fish'); // general name likely to trigger fallback if no exact match in WoRMS
+
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('name');
+    expect(res.body[0]).toHaveProperty('source');
+    expect(['WoRMS', 'FishWatch']).toContain(res.body[0].source);
+  });
+
+  it('returns 500 for totally invalid species name', async () => {
+    const res = await request(app)
+      .get('/api/worms/thisisnotaspeciesname');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body).toHaveProperty('message');
+    expect(res.body).toHaveProperty('error');
+  });
+});
+
+// Use supertest to send multipart/form-data instead of JSON
+request(app)
+  .post('/api/sightings')
+  .field('species', 'Humpback Whale')
+  .field('count', 2)
+  .field('behavior', 'Breaching')
+  .field('location', JSON.stringify({ lat: 18.5, lng: 73.9 }))
+  .attach('photo', path.join(__dirname, 'fixtures/sample.jpg'));

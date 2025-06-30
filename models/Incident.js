@@ -1,14 +1,18 @@
 // models/Incident.js
 const mongoose = require('mongoose');
 const IncidentSchema = new mongoose.Schema({
-  type: { type: String, enum: ['pollution', 'injured_animal', 'dead_animal'] },
-  description: String,
+  type: { type: String, required: true },
+  description: { type: String, required: true },
   photoUrl: String,
   location: {
     lat: Number,
     lng: Number
   },
-  reporter: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  createdAt: { type: Date, default: Date.now }
+  shipName: String,
+  shipNumber: String,
+  shipImageUrl: String,
+  reporter: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } // Added reporter field
 });
-module.exports = mongoose.model('Incident', IncidentSchema);
+
+// Prevent model overwrite upon hot-reload or repeated import
+module.exports = mongoose.models.Incident || mongoose.model('Incident', IncidentSchema);
