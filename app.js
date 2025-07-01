@@ -10,6 +10,9 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+// app.set("view engine", "ejs");
+// app.set("views", path.join(__dirname, "views"));
+
 // CORS setup for frontend access
 app.use(cors({
   origin: 'http://localhost:5173',
@@ -45,6 +48,8 @@ app.use('/api/incidents', require('./routes/incidentRoutes'));
 app.use('/api/species', require('./routes/speciesRoutes'));
 app.use('/api/feed', require('./routes/feedRoutes'));
 app.use('/api/worms', require('./routes/wormsRoutes'));
+app.use('/api/test', require('./routes/uploadRoutes')); // ✅ OK now
+
 
 // Root test route
 app.get('/', (req, res) => {
