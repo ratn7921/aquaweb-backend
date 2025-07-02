@@ -1,0 +1,148 @@
+
+
+
+Perfect! Based on your **current AquaWeb structure** and the new **industry-standard features**, here’s an updated and organized **folder structure** for both the **frontend** and **backend**, **without breaking your existing setup**. This structure seamlessly adds:
+
+* User role & verification
+* Real-time notifications
+* Analytics dashboard
+* Offline support
+* Multimedia (video/audio) support
+* Social/community features
+
+---
+
+### ✅ Updated Frontend: `Aquaweb-Finalfrontend/src`
+
+```
+src/
+├── api/
+│   └── axios.js
+│   └── notificationApi.js         # New: API for real-time alerts
+│   └── analyticsApi.js            # New: For fetching charts/heatmap data
+│   └── mediaApi.js                # New: Video/audio uploads
+│   └── socialApi.js               # New: Comments, likes
+│
+├── assets/
+│   └── icons/
+│   └── images/
+│
+├── auth/
+│   └── ProtectedRoute.jsx
+│   └── RoleGate.jsx               # New: Wrapper to gate features by role
+│
+├── components/
+│   ├── Navbar.jsx
+│   ├── Sidebar.jsx
+│   ├── MapView.jsx
+│   ├── UploadMediaModal.jsx       # New: For uploading video/audio
+│   ├── NotificationBell.jsx       # New: Real-time alert bell
+│   ├── CommentSection.jsx         # New: For comments on sightings
+│   └── LikeButton.jsx             # New: For liking reports
+│
+├── pages/
+│   ├── DashboardExpert.jsx
+│   ├── DashboardUser.jsx
+│   ├── ReportIncident.jsx
+│   ├── ReportSighting.jsx
+│   ├── Trip.jsx
+│   ├── TripHistory.jsx
+│   ├── Analytics.jsx              # New: Charts, heatmaps, insights
+│   ├── MediaGallery.jsx           # New: Browse uploaded videos/audios
+│   ├── OfflineQueue.jsx           # New: Shows offline-saved reports
+│   └── RoleVerification.jsx       # New: Submit proof to be an expert
+│
+├── screens/
+│   └── [You may move dashboard/trip UI here later]
+│
+├── utils/
+│   ├── generateToken.js
+│   ├── offlineStorage.js          # New: IndexedDB logic for offline caching
+│   └── roleUtils.js               # New: Check user role, access rights
+│
+├── serviceWorker.js               # New: For offline support
+└── App.jsx
+```
+
+---
+
+### ✅ Updated Backend: `server/`
+
+```
+server/
+├── bin/
+│   └── www
+│
+├── config/
+│   └── cloudinary.js             # For image/video uploads
+│   └── socket.js                 # New: WebSocket setup for notifications
+│
+├── controllers/
+│   ├── sightingsController.js
+│   ├── incidentsController.js
+│   ├── mediaController.js        # New: Handles video/audio uploads
+│   ├── notificationsController.js# New: Sends alert to clients
+│   ├── analyticsController.js    # New: Heatmap data, trending reports
+│   ├── commentsController.js     # New: Comments CRUD
+│   ├── likesController.js        # New: Like/unlike sightings
+│   └── roleVerificationController.js # New: Handle role upgrade requests
+│
+├── middleware/
+│   ├── auth.js
+│   ├── roleMiddleware.js         # New: Checks for 'expert' role
+│   └── offlineSync.js            # New: Handle queued reports syncing
+│
+├── models/
+│   ├── Sighting.js
+│   ├── Incident.js
+│   ├── User.js
+│   ├── Media.js                  # New: schema for video/audio files
+│   ├── Notification.js           # New: stores push messages
+│   ├── Comment.js                # New: for sighting/incident comments
+│   ├── Like.js                   # New: for likes
+│   └── RoleRequest.js            # New: model for role upgrade requests
+│
+├── routes/
+│   ├── sightingsRoutes.js
+│   ├── incidentsRoutes.js
+│   ├── mediaRoutes.js            # New: POST /media
+│   ├── notificationsRoutes.js    # New: GET /notifications
+│   ├── analyticsRoutes.js        # New: GET /analytics/*
+│   ├── commentsRoutes.js         # New: POST/GET comments
+│   ├── likesRoutes.js            # New: like/unlike
+│   └── roleRequestRoutes.js      # New: submit/view expert request
+│
+├── utils/
+│   └── cloudinaryUpload.js
+│   └── webSocketServer.js        # socket.io logic
+│   └── heatmapCalc.js            # spatial calculations for heatmap
+│
+├── views/
+│   └── index.ejs (if needed)
+│
+├── uploads/
+│   └── [image/video/audio files]
+│
+├── app.js
+├── package.json
+└── README.md
+```
+
+---
+
+### 🧩 Tech to Integrate
+
+| Feature             | Tools / Libraries                                    |
+| ------------------- | ---------------------------------------------------- |
+| Real-time alerts    | `Socket.IO`, `WebSocket`, or `Firebase`              |
+| Multimedia uploads  | `Multer`, `Cloudinary`, or `AWS S3`                  |
+| Offline mode        | `IndexedDB`, `localforage`, `service-worker.js`      |
+| Analytics dashboard | `Chart.js`, `Mapbox GL`, `Leaflet`, `heatmap.js`     |
+| Role verification   | Simple admin panel or `JWT` + `role` field in `User` |
+| Social features     | Create `Comment`, `Like` models and related routes   |
+
+---
+
+This structure preserves your current flow but makes your project scalable and industry-ready. Want me to scaffold the actual folders or create boilerplate code for any of the above?
+
+I can start with [setting up real-time alerts using Socket.IO](f), [creating media upload endpoints with Cloudinary](f), or [designing the analytics dashboard layout in React](f).
