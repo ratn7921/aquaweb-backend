@@ -1,48 +1,94 @@
-// // server/controllers/feedController.js
-// const Post     = require('../models/Post');
-// const Like     = require('../models/Like');
-// const Comment  = require('../models/Comment');
-// const Sighting = require('../models/Sighting');
-// const Incident = require('../models/Incident');
-// const Trip     = require('../models/Trip');
 
-// exports.getFeed = async (req, res) => {
+
+
+
+// import mongoose from 'mongoose';
+// import Post from '../models/Post.js';
+// import Media from '../models/Media.js';
+// import Like from '../models/Like.js';
+// import Comment from '../models/Comment.js';
+// import Sighting from '../models/Sighting.js';
+// import Incident from '../models/Incident.js';
+// import Trip from '../models/Trip.js';
+
+// // ✅ Create a Post
+// export const createPost = async (req, res) => {
 //   try {
-//     const page  = Math.max(1, parseInt(req.query.page)  || 1);
-//     const limit = Math.min(50, parseInt(req.query.limit) || 10);
-//     const skip  = (page - 1) * limit;
+//     const { caption, type, refId } = req.body;
+//     const userId = req.user?._id;
 
-//     // 1️⃣ Legacy
+//     // Parse and validate media IDs from request body or uploaded files
+//     let media = [];
+
+//     if (req.files && req.files.length > 0) {
+//       // If you're uploading files (Multer), store them in Media model
+//       const mediaDocs = await Promise.all(req.files.map(async (file) => {
+//         const m = await Media.create({
+//           user: userId,
+//           url: file.filename, // adjust to `file.path` if stored differently
+//           type: file.mimetype.startsWith('video') ? 'video' : 'image',
+//         });
+//         return m._id;
+//       }));
+//       media = mediaDocs;
+//     } else if (req.body.media && Array.isArray(req.body.media)) {
+//       // Handle frontend-provided media IDs
+//       media = req.body.media
+//         .filter(id => mongoose.Types.ObjectId.isValid(id))
+//         .map(id => new mongoose.Types.ObjectId(id));
+//     }
+
+//     const post = await Post.create({
+//       author: userId,
+//       caption,
+//       type,
+//       refId: type === 'custom' ? undefined : refId,
+//       media,
+//     });
+
+//     await post.populate('author', 'name avatar');
+//     res.status(201).json(post);
+//   } catch (err) {
+//     console.error('createPost error:', err);
+//     res.status(500).json({ message: 'Failed to create post', error: err.message });
+//   }
+// };
+
+// // ✅ Get Feed
+// export const getFeed = async (req, res) => {
+//   try {
+//     const page = Math.max(1, parseInt(req.query.page) || 1);
+//     const limit = Math.min(50, parseInt(req.query.limit) || 10);
+//     const skip = (page - 1) * limit;
+
 //     const [sights, incs, trips] = await Promise.all([
 //       Sighting.find().lean(),
 //       Incident.find().lean(),
 //       Trip.find().lean(),
 //     ]);
+
 //     const legacy = [
 //       ...sights.map(s => ({ ...s, type: 'sighting' })),
-//       ...incs .map(i => ({ ...i, type: 'incident'  })),
-//       ...trips.map(t => ({ ...t, type: 'trip'      })),
+//       ...incs.map(i => ({ ...i, type: 'incident' })),
+//       ...trips.map(t => ({ ...t, type: 'trip' })),
 //     ];
 
-//     // 2️⃣ New Posts
 //     const posts = await Post.find()
 //       .sort({ createdAt: -1 })
 //       .skip(skip).limit(limit)
-//       .populate('author','name avatar')
+//       .populate('author', 'name avatar')
 //       .lean();
 
-//     // 3️⃣ Merge & sort
 //     const merged = [...legacy, ...posts]
-//       .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+//       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 //       .slice(0, limit);
 
-//     // 4️⃣ Enrich with counts
 //     const feed = await Promise.all(merged.map(async item => {
 //       const id = item._id;
 //       const [likesCount, commentsCount, iLiked] = await Promise.all([
 //         Like.countDocuments({ post: id }),
 //         Comment.countDocuments({ post: id }),
-//         Like.exists({ post: id, user: req.user._id })
+//         Like.exists({ post: id, user: req.user._id }),
 //       ]);
 //       return { ...item, likesCount, commentsCount, iLiked };
 //     }));
@@ -54,38 +100,18 @@
 //   }
 // };
 
-// exports.createPost = async (req, res) => {
-//   try {
-//     const { text, type, refId } = req.body;
-//     const mediaFiles = req.files || []; 
-//     const media = mediaFiles.map(f => f.filename);
-
-//     const post = await Post.create({
-//       author: req.user._id,
-//       type,
-//       refId: type === 'custom' ? undefined : refId,
-//       text,
-//       media
-//     });
-//     await post.populate('author','name avatar');
-//     res.status(201).json(post);
-//   } catch (err) {
-//     console.error('createPost error:', err);
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
-// exports.getPostById = async (req, res) => {
+// // ✅ Get Post by ID
+// export const getPostById = async (req, res) => {
 //   try {
 //     const post = await Post.findById(req.params.id)
-//       .populate('author','name avatar')
+//       .populate('author', 'name avatar')
 //       .lean();
 //     if (!post) return res.status(404).json({ message: 'Not found' });
 
 //     const [likesCount, commentsCount, iLiked] = await Promise.all([
 //       Like.countDocuments({ post: post._id }),
 //       Comment.countDocuments({ post: post._id }),
-//       Like.exists({ post: post._id, user: req.user._id })
+//       Like.exists({ post: post._id, user: req.user._id }),
 //     ]);
 
 //     res.json({ ...post, likesCount, commentsCount, iLiked });
@@ -97,37 +123,42 @@
 
 
 
-import mongoose from 'mongoose';
-import Post from '../models/Post.js';
-import Media from '../models/Media.js';
-import Like from '../models/Like.js';
-import Comment from '../models/Comment.js';
-import Sighting from '../models/Sighting.js';
-import Incident from '../models/Incident.js';
-import Trip from '../models/Trip.js';
+
+
+
+
+
+
+
+
+const mongoose = require('mongoose');
+const Post = require('../models/Post');
+const Media = require('../models/Media');
+const Like = require('../models/Like');
+const Comment = require('../models/Comment');
+const Sighting = require('../models/Sighting');
+const Incident = require('../models/Incident');
+const Trip = require('../models/Trip');
 
 // ✅ Create a Post
-export const createPost = async (req, res) => {
+const createPost = async (req, res) => {
   try {
     const { caption, type, refId } = req.body;
     const userId = req.user?._id;
 
-    // Parse and validate media IDs from request body or uploaded files
     let media = [];
 
     if (req.files && req.files.length > 0) {
-      // If you're uploading files (Multer), store them in Media model
       const mediaDocs = await Promise.all(req.files.map(async (file) => {
         const m = await Media.create({
           user: userId,
-          url: file.filename, // adjust to `file.path` if stored differently
+          url: file.filename,
           type: file.mimetype.startsWith('video') ? 'video' : 'image',
         });
         return m._id;
       }));
       media = mediaDocs;
     } else if (req.body.media && Array.isArray(req.body.media)) {
-      // Handle frontend-provided media IDs
       media = req.body.media
         .filter(id => mongoose.Types.ObjectId.isValid(id))
         .map(id => new mongoose.Types.ObjectId(id));
@@ -150,7 +181,7 @@ export const createPost = async (req, res) => {
 };
 
 // ✅ Get Feed
-export const getFeed = async (req, res) => {
+const getFeed = async (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(50, parseInt(req.query.limit) || 10);
@@ -196,11 +227,12 @@ export const getFeed = async (req, res) => {
 };
 
 // ✅ Get Post by ID
-export const getPostById = async (req, res) => {
+const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
       .populate('author', 'name avatar')
       .lean();
+
     if (!post) return res.status(404).json({ message: 'Not found' });
 
     const [likesCount, commentsCount, iLiked] = await Promise.all([
@@ -215,3 +247,14 @@ export const getPostById = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+module.exports = {
+  createPost,
+  getFeed,
+  getPostById,
+};
+
+
+
+
+
