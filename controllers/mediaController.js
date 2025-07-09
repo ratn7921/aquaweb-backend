@@ -1,3 +1,5 @@
+//not part of main Application 
+
 // ----------------------------------------
 // BACKEND: server/controllers/mediaController.js
 const Media = require('../models/Media');

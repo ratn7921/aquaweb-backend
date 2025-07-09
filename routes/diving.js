@@ -1,3 +1,5 @@
+//not part of main Application 
+
 // routes/diving.js
 const express = require('express');
 const router = express.Router();

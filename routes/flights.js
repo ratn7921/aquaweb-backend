@@ -1,3 +1,5 @@
+//not part of main Application 
+
 // routes/flights.js
 const express = require('express');
 const axios = require('axios');

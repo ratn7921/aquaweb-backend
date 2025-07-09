@@ -1,29 +1,5 @@
 
-// import mongoose from 'mongoose';
-
-// const commentSchema = new mongoose.Schema({
-//   content: {
-//     type: String,
-//     required: true,
-//   },
-//   report: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'Report', // make sure 'Report' is the correct model name
-//     required: true,
-//   },
-//   createdAt: {
-//     type: Date,
-//     default: Date.now,
-//   },
-//   user: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'User',
-//     required: true,
-//   },
-// });
-
-// export default mongoose.model('Comment', commentSchema);
-
+//not part of main Application 
 
 const mongoose = require('mongoose');
 

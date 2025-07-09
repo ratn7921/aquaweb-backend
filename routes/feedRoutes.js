@@ -1,24 +1,4 @@
-// // server/routes/feedRoutes.js
-// const express               = require('express');
-// const { getFeed, createPost, getPostById } = require('../controllers/feedController');
-// const auth                  = require('../middleware/auth');
-// const multer                = require('multer');
-// const upload                = multer({ dest: './uploads/' });
-
-// const router = express.Router();
-
-// // GET paginated feed
-// router.get('/',      auth, getFeed);
-
-// // GET single post
-// router.get('/:id',   auth, getPostById);
-
-// // POST new post (with up to 5 media files)
-// router.post('/',     auth, upload.array('media', 5), createPost);
-
-// module.exports = router;
-
-
+//Attension needed
 
 // server/routes/feedRoutes.js
 const express = require('express');

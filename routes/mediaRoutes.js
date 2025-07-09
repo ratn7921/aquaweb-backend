@@ -1,4 +1,7 @@
+//not part of main Application 
+
 // ----------------------------------------
+
 // BACKEND: server/routes/mediaRoutes.js
 const express = require('express');
 const router = express.Router();

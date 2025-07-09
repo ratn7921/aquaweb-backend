@@ -1,3 +1,5 @@
+//not part of main Application 
+
 // ----------------------------------------
 // BACKEND: server/routes/likesRoutes.js
 const express = require('express');

@@ -1,33 +1,4 @@
 
-
-// // new models/Species.js
-// const mongoose = require('mongoose');
-
-// const SpeciesSchema = new mongoose.Schema({
-//   name: String,
-//   scientificName: String,
-//   imageUrl: String,
-//   description: String,
-//   rank: String,
-//   habitat: String,
-//   facts: [String],
-//   _source: String,
-//   sightings: [
-//     {
-//       reporterName: String,
-//       location: {
-//         lat: Number,
-//         lng: Number
-//       },
-//       createdAt: Date
-//     }
-//   ]
-// });
-
-// module.exports = mongoose.model('Species', SpeciesSchema);
-
-
-
 const mongoose = require('mongoose');
 
 const SpeciesSchema = new mongoose.Schema({

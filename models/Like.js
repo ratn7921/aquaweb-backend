@@ -1,3 +1,5 @@
+//not part of main Application 
+
 // ----------------------------------------
 // BACKEND: server/models/Like.js
 const mongoose = require('mongoose');

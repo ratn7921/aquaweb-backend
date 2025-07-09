@@ -1,3 +1,5 @@
+//not part of main Application 
+
 // ----------------------------------------
 // BACKEND: server/controllers/likesController.js
 const Like = require('../models/Like');

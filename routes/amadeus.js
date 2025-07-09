@@ -1,3 +1,5 @@
+//not part of main Application 
+
 // routes/amadeus.js
 const express = require('express');
 const axios = require('axios');
